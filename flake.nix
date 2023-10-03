@@ -16,6 +16,7 @@
       {
         devShells.default = pkgs.mkShell {
           buildInputs = [
+            pkgs.heroku
             pkgs.nodejs_18
             pkgs.postgresql_16
           ];
@@ -43,7 +44,6 @@
 
             if ! pg_ctl status
             then
-              echo "Starting with log file: $PGLOG"
               pg_ctl start -l $PGLOG -o "--unix_socket_directories='$PGHOST'"
             fi
 
