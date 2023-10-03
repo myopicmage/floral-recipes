@@ -31,9 +31,11 @@ export const registerFlowers = () => {
   //delete a flower
   app.delete("/:id", async (req, res) => {
     try {
-      const results = db.query("DELETE FROM flowers WHERE id = $1", [
-        req.params.id,
-      ]);
+      await dbContext.flowers
+        .softDelete()
+        .where("id = :id", { id: req.params.id })
+        .execute();
+
       res.status(204).json({
         status: "success",
         id: Number(req.params.id)
