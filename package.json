@@ -1,0 +1,12 @@
+{
+  "name": "floral-recipes",
+  "version": "1.0.0",
+  "workspaces": [
+    "packages/client",
+    "packages/server"
+  ],
+  "devDependencies": {
+    "lerna": "^7.3.0"
+  },
+  "dependencies": {}
+}

@@ -53,6 +53,8 @@ const run = async () => {
     await db.connect();
   } catch (err) {
     console.error(err);
+
+    // process.abort();
   }
 
   const { PORT } = process.env;

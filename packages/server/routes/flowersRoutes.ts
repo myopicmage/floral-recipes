@@ -1,17 +1,17 @@
 import express from "express";
 import { db } from "../configs/db.config";
 import { checkAuth } from '../auth';
+import { mkCtx } from '../db/entities';
 
 export const registerFlowers = () => {
   const app = express.Router();
+  const dbCtx = mkCtx();
 
   //gets all flowers with all data
   app.get("/", checkAuth, async (req, res) => {
     try {
-      const results = await db.query(
-        "SELECT * FROM flowers ORDER BY flower_name"
-      );
-      res.status(200).json(results.rows);
+      const flowers = await dbCtx.flowers.orderBy("flower.flower_name").getMany();
+      res.status(200).json(flowers);
     } catch (err) {
       console.log(err);
     }
@@ -32,9 +32,11 @@ export const registerFlowers = () => {
   //delete a flower
   app.delete("/:id", async (req, res) => {
     try {
-      const results = db.query("DELETE FROM flowers WHERE id = $1", [
-        req.params.id,
-      ]);
+      await dbCtx.flowers
+        .softDelete()
+        .where("id = :id", { id: req.params.id })
+        .execute();
+
       res.status(204).json({
         status: "success",
         id: Number(req.params.id)
@@ -49,8 +51,8 @@ export const registerFlowers = () => {
     console.log(req.body);
     try {
       const results = await db.query(
-        "INSERT INTO flowers (flower_name, stem_price, rounded_up) VALUES ($1, $2, $3) returning *",
-        [req.body.flower_name, req.body.stem_price, req.body.rounded_up]
+        "INSERT INTO flowers (flower_name, stem_price) VALUES ($1, $2) returning *",
+        [req.body.flower_name, req.body.stem_price]
       );
       res.status(201).json(results.rows[0]);
     } catch (err) {
@@ -63,11 +65,10 @@ export const registerFlowers = () => {
   app.patch("/:id", async (req, res) => {
     try {
       const results = await db.query(
-        "UPDATE flowers SET flower_name = $1, stem_price = $2, rounded_up = $3 WHERE id = $4 returning *",
+        "UPDATE flowers SET flower_name = $1, stem_price = $2 WHERE id = $3 returning *",
         [
           req.body.flower_name,
           req.body.stem_price,
-          req.body.rounded_up,
           req.params.id,
         ]
       );
