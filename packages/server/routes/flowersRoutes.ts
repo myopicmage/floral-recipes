@@ -1,6 +1,7 @@
 import express from "express";
 import { db } from "../configs/db.config";
 import { checkAuth } from '../auth';
+import { dbContext } from '../db/entities';
 
 export const registerFlowers = () => {
   const app = express.Router();
@@ -8,10 +9,8 @@ export const registerFlowers = () => {
   //gets all flowers with all data
   app.get("/", checkAuth, async (req, res) => {
     try {
-      const results = await db.query(
-        "SELECT * FROM flowers ORDER BY flower_name"
-      );
-      res.status(200).json(results.rows);
+      const flowers = await dbContext.flowers.orderBy("flower.flower_name").getMany();
+      res.status(200).json(flowers);
     } catch (err) {
       console.log(err);
     }
