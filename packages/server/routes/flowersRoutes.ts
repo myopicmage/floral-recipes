@@ -1,15 +1,16 @@
 import express from "express";
 import { db } from "../configs/db.config";
 import { checkAuth } from '../auth';
-import { dbContext } from '../db/entities';
+import { mkCtx } from '../db/entities';
 
 export const registerFlowers = () => {
   const app = express.Router();
+  const dbCtx = mkCtx();
 
   //gets all flowers with all data
   app.get("/", checkAuth, async (req, res) => {
     try {
-      const flowers = await dbContext.flowers.orderBy("flower.flower_name").getMany();
+      const flowers = await dbCtx.flowers.orderBy("flower.flower_name").getMany();
       res.status(200).json(flowers);
     } catch (err) {
       console.log(err);
@@ -31,7 +32,7 @@ export const registerFlowers = () => {
   //delete a flower
   app.delete("/:id", async (req, res) => {
     try {
-      await dbContext.flowers
+      await dbCtx.flowers
         .softDelete()
         .where("id = :id", { id: req.params.id })
         .execute();

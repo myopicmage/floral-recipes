@@ -3,6 +3,8 @@ import { ArrangedFlower, Arrangement, Flower, Project, Users, FlowerOrders } fro
 
 const { DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE, DB_PORT } = process.env;
 
+const entities = [ArrangedFlower, Arrangement, Flower, Project, Users, FlowerOrders];
+
 const dataSourceOptions: DataSourceOptions = process.env.NODE_ENV === 'production'
   ? {
     url: process.env.DATABASE_URL,
@@ -10,18 +12,18 @@ const dataSourceOptions: DataSourceOptions = process.env.NODE_ENV === 'productio
       rejectUnauthorized: false
     },
     type: "postgres",
-    entities: [ArrangedFlower, Arrangement, Flower, Project, Users, FlowerOrders],
+    entities,
     logging: true,
-    synchronize: true
+    synchronize: false
   }
   : {
-    host: DB_HOST,
-    port: Number(DB_PORT ?? 0),
-    username: DB_USER,
-    password: DB_PASSWORD,
-    database: DB_DATABASE,
+    host: "localhost",
+    port: 5444,
+    username: 'postgres',
+    password: 'postgres',
+    database: 'floralrecipes',
     type: "postgres",
-    entities: [ArrangedFlower, Arrangement, Flower, Project, Users, FlowerOrders],
+    entities,
     logging: true,
     synchronize: true
   };
